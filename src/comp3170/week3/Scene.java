@@ -37,6 +37,12 @@ public class Scene {
 	private Matrix4f transMatrix = new Matrix4f();
 	private Matrix4f rotMatrix = new Matrix4f();
 	private Matrix4f scalMatrix = new Matrix4f();
+	
+	final private Vector3f OFFSET = new Vector3f(0.25f,0.0f,0.0f);
+	final private float MOVEMENT_SPEED = 1.0f;
+	final private float SCALE = 0.1f;
+	final private float ROTATION_RATE = TAU/3;
+
 
 	public Scene() {
 
@@ -104,20 +110,30 @@ public class Scene {
 //		scaleMatrix(newScaleX,newScaleY, modelMatrix);
 		
 //		//Rotate 45 degree and pointing Top-left corner		
-		float newTLCOffsetX = -0.79f;
-		float newTLCOffsetY = 0.79f;
-		translationMatrix(newTLCOffsetX, newTLCOffsetY, transMatrix);
+//		float newTLCOffsetX = -0.79f;
+//		float newTLCOffsetY = 0.79f;
+//		translationMatrix(newTLCOffsetX, newTLCOffsetY, transMatrix);
+//		
+//		float newTLCAngle = TAU / 8;// 45 Degree
+//		rotationMatrix(newTLCAngle, rotMatrix); 
+//		
+//		float newTLCScaleX = 0.3f;
+//		float newTLCScaleY = 0.3f;
+//		scaleMatrix(newTLCScaleX,newTLCScaleY, scalMatrix);
+//		
+//		modelMatrix.mul(transMatrix).mul(rotMatrix).mul(scalMatrix);
 		
-		float newTLCAngle = TAU / 8;// 45 Degree
-		rotationMatrix(newTLCAngle, rotMatrix); 
-		
-		float newTLCScaleX = 0.3f;
-		float newTLCScaleY = 0.3f;
-		scaleMatrix(newTLCScaleX,newTLCScaleY, scalMatrix);
-		
-		modelMatrix.mul(transMatrix).mul(rotMatrix).mul(scalMatrix);
+		//Add animaton
+		modelMatrix.translate(OFFSET).scale(SCALE);
 	}
-
+	
+	public void update(float deltaTime) {
+		
+		float movement = MOVEMENT_SPEED * deltaTime;
+		float rotation = ROTATION_RATE * deltaTime;
+		modelMatrix.translate(0.0f,movement, 0.0f).rotateZ(rotation);
+	}
+	
 	public void draw() {
 		
 		shader.enable();
