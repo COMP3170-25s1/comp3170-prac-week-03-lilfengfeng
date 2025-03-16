@@ -10,12 +10,14 @@ import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import comp3170.GLBuffers;
 import comp3170.Shader;
 import comp3170.ShaderLibrary;
+import static comp3170.Math.TAU;
 
 public class Scene {
 
@@ -30,6 +32,11 @@ public class Scene {
 	private int colourBuffer;
 
 	private Shader shader;
+	
+	private Matrix4f modelMatrix = new Matrix4f();
+	private Matrix4f transMatrix = new Matrix4f();
+	private Matrix4f rotMatrix = new Matrix4f();
+	private Matrix4f scalMatrix = new Matrix4f();
 
 	public Scene() {
 
@@ -77,7 +84,38 @@ public class Scene {
 			// @formatter:on
 
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
-
+		
+		//Workshop Practise
+//		float offsetX = 0.25f;
+//		float offsetY = 0.0f;
+//		translationMatrix(offsetX, offsetY, modelMatrix);
+		
+//		//Rotate 90 degree
+//		float newAngle = -TAU / 4;// 90 Degree
+//		rotationMatrix(newAngle, modelMatrix); 
+		
+		//Scale and transform at bottom-left corner.
+//		float newOffsetX = 0.7f;
+//		float newOffsetY = -0.7f;
+//		translationMatrix(newOffsetX, newOffsetY, modelMatrix);
+//	
+//		float newScaleX = 0.3f;
+//		float newScaleY = 0.3f;
+//		scaleMatrix(newScaleX,newScaleY, modelMatrix);
+		
+//		//Rotate 45 degree and pointing Top-left corner		
+		float newTLCOffsetX = -0.79f;
+		float newTLCOffsetY = 0.79f;
+		translationMatrix(newTLCOffsetX, newTLCOffsetY, transMatrix);
+		
+		float newTLCAngle = TAU / 8;// 45 Degree
+		rotationMatrix(newTLCAngle, rotMatrix); 
+		
+		float newTLCScaleX = 0.3f;
+		float newTLCScaleY = 0.3f;
+		scaleMatrix(newTLCScaleX,newTLCScaleY, scalMatrix);
+		
+		modelMatrix.mul(transMatrix).mul(rotMatrix).mul(scalMatrix);
 	}
 
 	public void draw() {
@@ -86,6 +124,9 @@ public class Scene {
 		// set the attributes
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_colour", colourBuffer);
+		
+		//set the uniform
+		shader.setUniform("u_modelMatrix", modelMatrix);
 
 		// draw using index buffer
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -136,11 +177,16 @@ public class Scene {
 
 		// TODO: Your code here
 		
-		//     [ 
-		// T = [
-		//     [
-		//     [
-
+		//     [ cos -sin 0 0 ]
+		// R = [ sin  cos 0 0 ]
+		//     [  0    0  0 0 ]
+		//     [  0    0  0 1 ]
+		
+		dest.m00((float)Math.cos(angle));
+		dest.m01((float)Math.sin(angle));
+		dest.m10((float)Math.sin(-angle));
+		dest.m11((float)Math.cos(angle));
+		
 		return dest;
 	}
 
@@ -157,7 +203,14 @@ public class Scene {
 	public static Matrix4f scaleMatrix(float sx, float sy, Matrix4f dest) {
 
 		// TODO: Your code here
-
+		
+		//     [ sx 0  0  0 ]
+		// S = [ 0  sy 0  0 ]
+		//     [ 0  0  0  0 ]
+		//     [ 0  0  0  1 ]
+		
+		dest.m00(sx);
+		dest.m11(sy);
 		return dest;
 	}
 
