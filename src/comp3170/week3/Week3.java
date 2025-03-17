@@ -1,4 +1,4 @@
-package comp3170.week3;
+     package comp3170.week3;
 
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL41.*;
@@ -62,7 +62,7 @@ public class Week3 implements IWindowListener {
 	
 	public void update() {
 		long time = System.currentTimeMillis();
-		float deltaTime = (time - oldTime) / 1000f;
+		float deltaTime = Math.min((time - oldTime) / 1000f,1.0f);
 		oldTime = time;
 		scene.update(deltaTime);
 	}
